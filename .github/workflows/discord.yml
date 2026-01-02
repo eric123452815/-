@@ -1,0 +1,14 @@
+name: Discord Webhook 測試
+
+on:
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 發送訊息
+        run: |
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK }}" \
+          -H "Content-Type: application/json" \
+          -d '{"content":"✅ Repo 內排程測試成功"}'

@@ -1,18 +1,23 @@
-import requests
-import os
+name: Daily Discord Post
 
-WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_URL']
+on:
+  schedule:
+    - cron: '0 0 * * *' # UTC時間，每天台灣早上8點請設為 0 0
+  workflow_dispatch:    # 可手動觸發
 
-data = {
-    "content": "早安！這是每天的自動提醒貼文。",
-    "username": "Daily Bot",
-    "thread_name": "每日發文",   # 論壇會自動生成主題
-    # "applied_tags": ["公告"]    # 如果你的論壇有標籤可以加
-}
-
-response = requests.post(WEBHOOK_URL, json=data)
-if response.status_code == 204:
-    print("發文成功！")
-else:
-    print("失敗：", response.text)
-
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 發送 Discord Webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "content": "早安！這是每天自動發文。",
+            "username": "Daily Bot",
+            "thread_name": "aa",
+            "applied_tags": ["公告"]
+          }'

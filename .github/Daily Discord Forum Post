@@ -1,0 +1,26 @@
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 0點 → 台灣早上 8點
+  workflow_dispatch:     # 可手動觸發測試
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 發送 Discord 論壇 Webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          # 設定每日主題標題和內容
+          TITLE="每日發文 $(date +'%Y-%m-%d')"
+          CONTENT="早安！這是每天自動發文。"
+
+          # 發送到論壇
+          curl -X POST "$WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"content\": \"$CONTENT\",
+            \"username\": \"Daily Bot\",
+            \"thread_name\": \"$TITLE\",
+            \"applied_tags\": [\"公告\"]
+          }"

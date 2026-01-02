@@ -1,14 +1,18 @@
-name: Discord Webhook 測試
+import requests
+import os
 
-on:
-  workflow_dispatch:
+WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_URL']
 
-jobs:
-  post:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 發送訊息
-        run: |
-          curl -X POST "${{ secrets.DISCORD_WEBHOOK }}" \
-          -H "Content-Type: application/json" \
-          -d '{"content":"✅ Repo 內排程測試成功"}'
+data = {
+    "content": "早安！這是每天的自動提醒貼文。",
+    "username": "Daily Bot",
+    "thread_name": "每日發文",   # 論壇會自動生成主題
+    # "applied_tags": ["公告"]    # 如果你的論壇有標籤可以加
+}
+
+response = requests.post(WEBHOOK_URL, json=data)
+if response.status_code == 204:
+    print("發文成功！")
+else:
+    print("失敗：", response.text)
+
